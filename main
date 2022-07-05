@@ -1,0 +1,79 @@
+import dearpygui.dearpygui as dpg
+import datetime
+import time
+
+today=datetime.date.today()
+
+
+class App:
+    
+
+    def callback(sender, data):
+        
+        dpg.hide_item('StartCalcBtn')
+        dpg.show_item('load')
+        dpg.show_item('CalcText')
+        
+        time.sleep(5)
+        print( datetime.date(dpg.get_value("DatePicker")['year']+1900,
+                              dpg.get_value("DatePicker")['month']+1,
+                              dpg.get_value("DatePicker")['month_day']).strftime('%d-%m-%Y'))
+        
+        dpg.hide_item('load')
+        dpg.hide_item('CalcText')
+        
+        dpg.show_item('SucceedText')
+        time.sleep(2)
+        dpg.hide_item('SucceedText')
+        
+        dpg.show_item('StartCalcBtn')
+    
+    dpg.create_context()
+    
+    with dpg.window(tag="Primary Window"):
+        
+        dpg.add_menu_bar(parent="window", tag="menu_bar")
+        
+        dpg.add_menu(label="Help", parent="menu_bar", tag="themes")
+        
+               
+        dpg.add_text(r"Program is used for calulating portfel VAR.", parent="themes")
+        dpg.add_text(r"Choose date on calendar, if you want to get calculating on this date.", parent="themes", bullet=True)
+        dpg.add_text(r"If you want to get today's calculating, don't choose anything.", parent="themes", bullet=True)
+        dpg.add_text(r"Press 'Start Calculating'.", parent="themes")
+        
+        
+        with dpg.tree_node(label="Choose Date"):
+    
+            dpg.add_separator()
+        
+            with dpg.table(header_row=False):
+    
+                dpg.add_table_column()
+    
+                with dpg.table_row():
+                    dpg.add_date_picker(default_value={'year':today.year-1900, 'month_day':today.day, 'month':today.month-1}, tag='DatePicker')
+                    dpg.get_value('DatePicker')
+                    
+                
+        
+        dpg.add_separator()
+        
+        dpg.add_loading_indicator(tag='load', show=False, radius=8,  pos=[215, 80],)
+        
+        dpg.add_button(label="Start Calculating", tag='StartCalcBtn', width=180, height=40,  track_offset=0.5, pos=[180, 215])
+        dpg.add_text(r"Calculating...", tag='CalcText', show=False, pos=[225, 230])
+        dpg.add_text(r"Succeed!", tag='SucceedText', show=False, pos=[235, 230])
+        dpg.set_item_callback("StartCalcBtn", callback)
+        
+
+    dpg.create_viewport(title='Var Calculating', width=545, height=300)
+    dpg.setup_dearpygui()
+    dpg.show_viewport()
+    dpg.set_primary_window("Primary Window", True)
+    dpg.start_dearpygui()
+    dpg.destroy_context()
+    
+if __name__ == '__main__':
+    test_app = App()
+    test_app.show()

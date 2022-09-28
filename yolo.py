@@ -32,8 +32,6 @@ class ObjectDetection:
         self.model.conf = 0.3 # set inference threshold at 0.3
         self.model.iou = settings.IOU_THRESHOLD # set inference IOU threshold at 0.3
 
-
-        self.model.classes = [0] 
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     def get_video_from_file(self):
@@ -56,7 +54,7 @@ class ObjectDetection:
         """
 
         # докинуть сюда нашу модель
-        model = torch.hub.load('ultralytics/yolov5', 'yolov5n', pretrained=True)
+        model = torch.hub.load('ultralytics/yolov5', 'custom', path='./YOLOS_cars.pt')
         return model
 
     def score_frame(self, frame):
@@ -84,6 +82,7 @@ class ObjectDetection:
         """
 
         labels, cord = results
+        print(labels)
         n = len(labels)
         x_shape, y_shape = frame.shape[1], frame.shape[0]
 
@@ -96,8 +95,17 @@ class ObjectDetection:
                 int(row[2]*x_shape), 
                 int(row[3]*y_shape)
                 )
-            bgr = (0, 0, 255)
-            cv2.rectangle(frame, (x1, y1), (x2, y2), bgr, 1)
+            # bgr = (0, 0, 255)
+            if labels[i] == 0:
+                bgr = (0, 0, 255)
+            elif labels[i] == 1:
+                bgr = (0, 255, 0)
+            elif labels[i] == 2:
+                bgr = (255, 0, 0)
+            elif labels[i] == 3:
+                bgr = (255, 255, 255)
+
+            cv2.rectangle(frame, (x1, y1), (x2, y2), bgr, 2)
 
             cv2.putText(
                 frame,
@@ -132,7 +140,8 @@ class ObjectDetection:
             if not ret:
                 break
 
-            results = self.score_frame(frame)
+            #get calculated boxes
+            results = self.score_frame(frame) 
 
             frame = self.plot_boxes(results, frame)
 

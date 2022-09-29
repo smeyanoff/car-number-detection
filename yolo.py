@@ -3,8 +3,10 @@ import math
 
 import torch
 import cv2
+import sqlite3
 
 import settings
+from DBlogic import make_commit_to_db
 
 
 class ObjectDetection:
@@ -33,6 +35,8 @@ class ObjectDetection:
         self.model.iou = settings.IOU_THRESHOLD # set inference IOU threshold at 0.3
 
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+        self.db_connection = sqlite3.connect(settings.DATABASE)
 
     def get_video_from_file(self):
 
@@ -82,7 +86,7 @@ class ObjectDetection:
         """
 
         labels, cord = results
-        print(labels)
+        
         n = len(labels)
         x_shape, y_shape = frame.shape[1], frame.shape[0]
 
@@ -95,7 +99,7 @@ class ObjectDetection:
                 int(row[2]*x_shape), 
                 int(row[3]*y_shape)
                 )
-            # bgr = (0, 0, 255)
+
             if labels[i] == 0:
                 bgr = (0, 0, 255)
             elif labels[i] == 1:
@@ -106,16 +110,6 @@ class ObjectDetection:
                 bgr = (255, 255, 255)
 
             cv2.rectangle(frame, (x1, y1), (x2, y2), bgr, 2)
-
-            cv2.putText(
-                frame,
-                f"Total Targets: {n}",
-                (30, 30),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1,
-                (0, 255, 0),
-                2
-                )
 
         return frame
 
@@ -137,13 +131,31 @@ class ObjectDetection:
 
         while True:
             ret, frame = player.read()
+
             if not ret:
                 break
+            
+            #resize current frame 
+            frame = cv2.resize( 
+                frame,
+                (720,480), #resolution
+                fx=0,
+                fy=0, 
+                interpolation = cv2.INTER_CUBIC
+                )
 
             #get calculated boxes
             results = self.score_frame(frame) 
 
             frame = self.plot_boxes(results, frame)
+
+            #Значения для теста
+            values_list = [
+                ('AA231A63', 'green', 'car'),
+                ('BA241A77', 'red', 'cap')
+            ]
+
+            make_commit_to_db(self.db_connection, values_list)
 
             cv2.imshow('video', frame)
 

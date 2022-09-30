@@ -7,6 +7,8 @@ import sqlite3
 
 import settings
 from DBlogic import make_commit_to_db
+import re
+import time
 
 
 class ObjectDetection:
@@ -57,7 +59,6 @@ class ObjectDetection:
         Function loads the yolo5 model from PyTorch Hub.
         """
 
-        # докинуть сюда нашу модель
         model = torch.hub.load('ultralytics/yolov5', 'custom', path='./YOLOS_cars.pt')
         return model
 
@@ -76,19 +77,27 @@ class ObjectDetection:
             )
         return labels, cord
 
-    def plot_boxes(self, results, frame):
+    def plot_get_boxes(self, results, frame):
 
         """
         plots boxes and labels on frame.
+        return dict with labels and cords
         :param results: inferences made by model
         :param frame: frame on which to  make the plots
         :return: new frame with boxes and labels plotted.
+        :return: dict with labels and cords 
         """
 
         labels, cord = results
         
         n = len(labels)
         x_shape, y_shape = frame.shape[1], frame.shape[0]
+
+        labls_cords = {}
+        numbers = []
+        cars = []
+        trucks = []
+        buses = []
 
         for i in range(n):
 
@@ -101,17 +110,26 @@ class ObjectDetection:
                 )
 
             if labels[i] == 0:
+                numbers.append((x1, y1, x2, y2))
                 bgr = (0, 0, 255)
             elif labels[i] == 1:
+                cars.append((x1, y1, x2, y2))
                 bgr = (0, 255, 0)
             elif labels[i] == 2:
+                trucks.append((x1, y1, x2, y2))
                 bgr = (255, 0, 0)
             elif labels[i] == 3:
+                buses.append((x1, y1, x2, y2))
                 bgr = (255, 255, 255)
 
             cv2.rectangle(frame, (x1, y1), (x2, y2), bgr, 2)
 
-        return frame
+        labls_cords['numbers'] = numbers
+        labls_cords['cars'] = cars
+        labls_cords['trucks'] = trucks
+        labls_cords['busses'] = buses
+
+        return frame, labls_cords
 
     def __call__(self):
 
@@ -122,6 +140,7 @@ class ObjectDetection:
         frame_rate = player.get(cv2.CAP_PROP_FPS)
         x_shape = int(player.get(cv2.CAP_PROP_FRAME_WIDTH))
         y_shape = int(player.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        i = 0
 
         fps = settings.CAM_FMS
         if fps > frame_rate:
@@ -147,15 +166,134 @@ class ObjectDetection:
             #get calculated boxes
             results = self.score_frame(frame) 
 
-            frame = self.plot_boxes(results, frame)
+            frame, labls_cords = self.plot_get_boxes(results, frame)
 
-            #Значения для теста
-            values_list = [
-                ('AA231A63', 'green', 'car'),
-                ('BA241A77', 'red', 'cap')
-            ]
+            new_cars = []
 
-            make_commit_to_db(self.db_connection, values_list)
+            for number in labls_cords['numbers']:
+
+                for car in labls_cords['cars']:
+                    
+                    # check if number's bounding box fully overlaps car's 
+                    if ((
+                        car[0]
+                        <= number[0]
+                        <= number[2]
+                        <= car[2]
+                    )
+                    and 
+                    (
+                        car[1]
+                        <= number[1]
+                        <= number[3]
+                        <= car[3]
+                    )):
+                        new_cars.append([number, car, "car"])
+                
+                for car in labls_cords['trucks']:
+                    
+                    # check if number's bounding box fully overlaps car's 
+                    if ((
+                        car[0]
+                        <= number[0]
+                        <= number[2]
+                        <= car[2]
+                    )
+                    and 
+                    (
+                        car[1]
+                        <= number[1]
+                        <= number[3]
+                        <= car[3]
+                    )):
+                        new_cars.append([number, car, "truck"])
+
+                for car in labls_cords['busses']:
+                    
+                    # check if number's bounding box fully overlaps car's 
+                    if ((
+                        car[0]
+                        <= number[0]
+                        <= number[2]
+                        <= car[2]
+                    )
+                    and 
+                    (
+                        car[1]
+                        <= number[1]
+                        <= number[3]
+                        <= car[3]
+                    )):
+                        new_cars.append([number, car, "busses"])
+
+            
+            if i != 0:
+                pf_detected_cars = detected_cars
+
+            detected_cars = []
+            
+            
+            #only for the test
+            import itertools
+            import numpy as np
+            nums = ['АА231К34', 'АО823Е63', 'ТТ621Н45']
+            colours = ['yellow', 'green', 'red', 'orange']
+
+            test_list = list(itertools.product(nums, colours))
+            a = np.random.randint(0,11)
+
+            for car in new_cars:
+                
+                #send car's number to the number model
+
+                #check the number ???
+                number = test_list[a][0]
+
+                if not re.match(
+                    "[А-Я]{2}[0-9]{3}[А-Я]{1}[0-9]{2}",
+                    number
+                    ) is None:
+
+                    car[0] = number
+
+                    #send car to the colour model
+                    colour = test_list[a][1]
+                    car[1] = colour
+
+                    detected_cars.append(tuple(car))
+
+
+            #campare cars in the past frame with
+            #cars on the current frame
+            if i != 0:
+
+                for pf_det_car in pf_detected_cars:
+
+                    for det_car in detected_cars:
+                        
+                        #if cars types are the same 
+                        if pf_det_car[2] == det_car[2]:
+
+                            #if cars colours are the same
+                            if pf_det_car[1] == det_car[1]:
+                                
+                                #if numbers are closely equails
+                                if (len(
+                                    set(pf_det_car[0])
+                                    .symmetric_difference(
+                                        set(det_car[0])
+                                    )) <= 2
+                                    ):
+                                        #I think this is the same car
+                                        pf_detected_cars.remove(det_car)
+
+                values =  list(set(pf_detected_cars) - set(detected_cars))
+
+                print(values)
+
+                # make_commit_to_db(self.db_connection, values)
+                
+            i += 1
 
             cv2.imshow('video', frame)
 

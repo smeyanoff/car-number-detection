@@ -1,5 +1,6 @@
 import time
 
+
 def make_commit_to_db(db_connection, values_list):
 
     """
@@ -10,7 +11,8 @@ def make_commit_to_db(db_connection, values_list):
     c = db_connection.cursor()
 
     for values in values_list:
-        c.execute(f"""
+        c.execute(
+            f"""
             insert into car_enters_check 
             values (
                 ?,
@@ -20,9 +22,8 @@ def make_commit_to_db(db_connection, values_list):
                     }',
                 ?,
                 ?
-                )""", 
-                values)
-        
+                )""",
+            values,
+        )
+
     db_connection.commit()
-
-

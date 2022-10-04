@@ -1,7 +1,6 @@
-
-
-import settings 
 import sqlite3
+
+import settings
 
 conn = sqlite3.connect(settings.DATABASE)
 c = conn.cursor()

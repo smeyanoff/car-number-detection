@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 
 from detect_car_YOLO import ObjectDetection
+from track_logic import *
 
 
 def get_frames(video_src: str) -> np.ndarray:
@@ -87,11 +88,17 @@ def plot_get_boxes(results, frame):
 def main():
     cv2.startWindowThread()
     detector = ObjectDetection("YOLOS_cars.pt", conf=0.3, iou=0.3)
+    i = 0
     for frame in get_frames("test/videos/test.mp4"):
         frame = preprocess(frame)
         results = detector.score_frame(frame)
         frame, labls_cords = plot_get_boxes(results, frame)
-
+        if i != 0:
+            pf_detected_cars = detected_cars
+        detected_cars = detect_car(labls_cords)
+        if i != 0:
+            values = track_cars(pf_detected_cars, detected_cars)
+            # make_commit_to_db(connection, values)
         cv2.imshow("video", frame)
         if cv2.waitKey(30) & 0xFF == ord("q"):
             break

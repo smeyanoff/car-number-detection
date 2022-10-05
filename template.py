@@ -1,6 +1,12 @@
 import cv2
+import torch
 import numpy as np
 
+import time
+
+from LPRnet.data.load_data import CHARS
+from LPRnet.model.LPRNet import build_lprnet
+from LPRnet.rec_plate import rec_plate
 from detect_car_YOLO import ObjectDetection
 from track_logic import *
 
@@ -26,7 +32,7 @@ def preprocess(image: np.ndarray) -> np.ndarray:
     Ресайз, нормализация и т.д.
     """
     image = cv2.resize(
-        image, (720, 480), fx=0, fy=0, interpolation=cv2.INTER_CUBIC  # resolution
+        image, (640, 480), fx=0, fy=0, interpolation=cv2.INTER_CUBIC  # resolution
     )
     return image
 
@@ -42,9 +48,10 @@ def plot_get_boxes(results, frame):
     """
 
     labels, cord = results
+    draw_frame = frame.copy()
 
     n = len(labels)
-    x_shape, y_shape = frame.shape[1], frame.shape[0]
+    x_shape, y_shape = draw_frame.shape[1], draw_frame.shape[0]
 
     labls_cords = {}
     numbers = []
@@ -75,30 +82,53 @@ def plot_get_boxes(results, frame):
             buses.append((x1, y1, x2, y2))
             bgr = (255, 255, 255)
 
-        cv2.rectangle(frame, (x1, y1), (x2, y2), bgr, 2)
+        cv2.rectangle(draw_frame, (x1, y1), (x2, y2), bgr, 2)
 
     labls_cords["numbers"] = numbers
     labls_cords["cars"] = cars
     labls_cords["trucks"] = trucks
     labls_cords["busses"] = buses
 
-    return frame, labls_cords
+    cv2.rectangle(draw_frame, (0, 300), (640, 480), (0, 0, 0), 2)
+    return draw_frame, labls_cords
 
+def check_roi(coords):
+    xc = int((coords[0] + coords[2])/2)
+    yc = int((coords[1] + coords[3])/2)
+    if (0 < xc < 640) and (300 < yc < 480):
+        return True
+    else:
+        return False
 
 def main():
     cv2.startWindowThread()
     detector = ObjectDetection("YOLOS_cars.pt", conf=0.3, iou=0.3)
+
+    LPRnet =  build_lprnet(lpr_max_len=9, phase=False, class_num=len(CHARS), dropout_rate=0)
+    LPRnet.to(torch.device("cuda:0"))
+    LPRnet.load_state_dict(torch.load("LPRnet/weights/LPRNet__iteration_2000_28.09.pth"))
+
     i = 0
-    for frame in get_frames("test/videos/test.mp4"):
-        frame = preprocess(frame)
-        results = detector.score_frame(frame)
-        frame, labls_cords = plot_get_boxes(results, frame)
+    for raw_frame in get_frames("test/videos/test.mp4"):
+        current_plates = ''
+        proc_frame = preprocess(raw_frame)
+        results = detector.score_frame(proc_frame)
+        draw_frame, labls_cords = plot_get_boxes(results, proc_frame)
+        #lp recognition
+        for idx, plate_coords in enumerate(labls_cords['numbers']):
+            if check_roi(plate_coords):
+                x1, y1 = plate_coords[0], plate_coords[1]
+                x2, y2 = plate_coords[2], plate_coords[3]
+                plate = proc_frame[y1:y2, x1:x2]
+                plate_text = rec_plate(LPRnet, plate)
+                current_plates += plate_text + ' '
+        cv2.putText(draw_frame, current_plates, (10, 10), 0, 0.5, [225, 255, 255], thickness=2, lineType=cv2.LINE_AA)
         if i != 0:
             pf_detected_cars = detected_cars
         detected_cars = detect_car(labls_cords)
         if i != 0:
             values = track_cars(pf_detected_cars, detected_cars)
             # make_commit_to_db(connection, values)
-        cv2.imshow("video", frame)
+        cv2.imshow("video", draw_frame)
         if cv2.waitKey(30) & 0xFF == ord("q"):
             break

@@ -53,7 +53,7 @@ def detect_car(labls_cords: dict) -> list:
 
             detected_cars.append(tuple(car))
 
-    return detected_cars
+    return new_cars
 
 
 def track_cars(pf_detected_cars: list, detected_cars: list) -> list:

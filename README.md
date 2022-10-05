@@ -20,7 +20,7 @@
 1. Создать виртуальное окружение
 2. Установить зависимости из requirements.txt:
 ```
-pip install -r /path/to/requirements.txt
+pip install -r requirements.txt
 ```
 3. Проверить пути до весов/видео
 4. ``` python main.py ```

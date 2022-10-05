@@ -89,13 +89,13 @@ def plot_get_boxes(results, frame):
     labls_cords["trucks"] = trucks
     labls_cords["busses"] = buses
 
-    cv2.rectangle(draw_frame, (0, 300), (640, 480), (0, 0, 0), 2)
+    cv2.rectangle(draw_frame, (0, 500), (1920, 1000), (0, 0, 0), 2)
     return draw_frame, labls_cords
 
 def check_roi(coords):
     xc = int((coords[0] + coords[2])/2)
     yc = int((coords[1] + coords[3])/2)
-    if (0 < xc < 640) and (300 < yc < 480):
+    if (0 < xc < 1920) and (500 < yc < 1000):
         return True
     else:
         return False
@@ -110,19 +110,20 @@ def main():
 
     i = 0
     for raw_frame in get_frames("test/videos/test.mp4"):
+        # time.sleep(1)
         current_plates = ''
         proc_frame = preprocess(raw_frame)
         results = detector.score_frame(proc_frame)
-        draw_frame, labls_cords = plot_get_boxes(results, proc_frame)
+        draw_frame, labls_cords = plot_get_boxes(results, raw_frame)
         #lp recognition
         for idx, plate_coords in enumerate(labls_cords['numbers']):
             if check_roi(plate_coords):
                 x1, y1 = plate_coords[0], plate_coords[1]
                 x2, y2 = plate_coords[2], plate_coords[3]
-                plate = proc_frame[y1:y2, x1:x2]
+                plate = raw_frame[y1:y2, x1:x2]
                 plate_text = rec_plate(LPRnet, plate)
-                current_plates += plate_text + ' '
-        cv2.putText(draw_frame, current_plates, (10, 10), 0, 0.5, [225, 255, 255], thickness=2, lineType=cv2.LINE_AA)
+                current_plates += plate_text + ' || '
+        cv2.putText(draw_frame, current_plates, (10, 50), 0, 1, (255, 255, 255), thickness=2, lineType=cv2.LINE_AA)
         if i != 0:
             pf_detected_cars = detected_cars
         detected_cars = detect_car(labls_cords)

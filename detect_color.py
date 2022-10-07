@@ -205,6 +205,11 @@ def detect_color(frame, bbox, numcolors=1, swatchsize=20, resize=150):
 
     if os.path.isfile(PATH) and os.access(PATH, os.R_OK):
         print('training data is ready, classifier is loading...')
+    else:
+        print('training data is being created...')
+        open('training.data', 'w')
+        training()
+        print('training data is ready, classifier is loading...')
 
     # get the prediction
     color_histogram_of_test_image(source_image)

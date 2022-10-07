@@ -213,5 +213,5 @@ def detect_color(frame, bbox, numcolors=1, swatchsize=20, resize=150):
 
 
     # Display the resulting frame
-    cv2.imshow('color classifier', source_image)
+    # cv2.imshow('color classifier', source_image)
     return prediction

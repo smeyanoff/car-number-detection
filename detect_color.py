@@ -14,46 +14,6 @@ def bounding_box_img(img, bbox):
     bbox_obj = img[y_min:y_max, x_min:x_max]
     return bbox_obj
 
-
-# def save_palette(colors, swatchsize=20):
-#     num_colors = len(colors)
-#     palette = Image.new('RGB', (swatchsize * num_colors, swatchsize))
-#     draw = ImageDraw.Draw(palette)
-#
-#     posx = 0
-#     for color in colors:
-#         draw.rectangle([posx, 0, posx + swatchsize, swatchsize], fill=color)
-#         posx = posx + swatchsize
-#     del draw
-#
-#
-# def detect_color_palette(frame, bbox, numcolors=1, swatchsize=20, resize=150):
-#     """
-#     function scores each frame of the video and returns results.
-#     :param frame: frame to be infered.
-#     :return: labels and coordinates of objects found.
-#     """
-#     box_image = bounding_box_img(frame, bbox)
-#     pil_box_image = Image.fromarray(box_image)
-#
-#     pil_box_image = pil_box_image.resize((resize, resize))
-#
-#     # Reduce to palette
-#     paletted = pil_box_image.convert('P', palette=Image.ADAPTIVE, colors=numcolors)
-#
-#     # Find dominant colors
-#     palette = paletted.getpalette()
-#     paletted.show()
-#     color_counts = sorted(paletted.getcolors(), reverse=True)
-#     colors = list()
-#
-#     for i in range(numcolors):
-#         palette_index = color_counts[i][1]
-#         dominant_color = palette[palette_index * 3:palette_index * 3 + 3]
-#         print(dominant_color)
-#         colors.append(tuple(dominant_color))
-
-
 def color_histogram_of_test_image(image):
     chans = cv2.split(image)
     colors = ('b', 'g', 'r')
@@ -250,14 +210,7 @@ def detect_color(frame, bbox, numcolors=1, swatchsize=20, resize=150):
     color_histogram_of_test_image(source_image)
     prediction = main('training.data', 'test.data')
     print('Detected color is:', prediction)
-    # cv2.putText(
-    #     source_image,
-    #     'Prediction: ' + prediction,
-    #     (15, 45),
-    #     cv2.FONT_HERSHEY_PLAIN,
-    #     3,
-    #     200,
-    # )
+
 
     # Display the resulting frame
     cv2.imshow('color classifier', source_image)

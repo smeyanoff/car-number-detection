@@ -1,13 +1,14 @@
-import cv2
-import torch
-import numpy as np
-
 import time
 
+import cv2
+import numpy as np
+import torch
+
+from ColourDetection.detect_color import detect_color
 from LPRnet.data.load_data import CHARS
 from LPRnet.model.LPRNet import build_lprnet
 from LPRnet.rec_plate import rec_plate
-from detect_car_YOLO import ObjectDetection
+from ObjectDetection.detect_car_YOLO import ObjectDetection
 from track_logic import *
 
 
@@ -26,32 +27,30 @@ def get_frames(video_src: str) -> np.ndarray:
     return None
 
 
-def preprocess(image: np.ndarray) -> np.ndarray:
+def preprocess(image: np.ndarray, size: tuple) -> np.ndarray:
     """
     Препроцесс перед отправкой на YOLO
     Ресайз, нормализация и т.д.
     """
     image = cv2.resize(
-        image, (640, 480), fx=0, fy=0, interpolation=cv2.INTER_CUBIC  # resolution
+        image, size, fx=0, fy=0, interpolation=cv2.INTER_CUBIC  # resolution
     )
     return image
 
 
-def plot_get_boxes(results, frame):
+def get_boxes(results, frame):
+
     """
-    plots boxes and labels on frame.
     return dict with labels and cords
     :param results: inferences made by model
-    :param frame: frame on which to  make the plots
-    :return: new frame with boxes and labels plotted.
+    :param frame: frame on which cords calculated
     :return: dict with labels and cords
     """
 
     labels, cord = results
-    draw_frame = frame.copy()
 
     n = len(labels)
-    x_shape, y_shape = draw_frame.shape[1], draw_frame.shape[0]
+    x_shape, y_shape = frame.shape[1], frame.shape[0]
 
     labls_cords = {}
     numbers = []
@@ -71,65 +70,153 @@ def plot_get_boxes(results, frame):
 
         if labels[i] == 0:
             numbers.append((x1, y1, x2, y2))
-            bgr = (0, 0, 255)
         elif labels[i] == 1:
             cars.append((x1, y1, x2, y2))
-            bgr = (0, 255, 0)
         elif labels[i] == 2:
             trucks.append((x1, y1, x2, y2))
-            bgr = (255, 0, 0)
         elif labels[i] == 3:
             buses.append((x1, y1, x2, y2))
-            bgr = (255, 255, 255)
-
-        cv2.rectangle(draw_frame, (x1, y1), (x2, y2), bgr, 2)
 
     labls_cords["numbers"] = numbers
     labls_cords["cars"] = cars
     labls_cords["trucks"] = trucks
     labls_cords["busses"] = buses
 
-    cv2.rectangle(draw_frame, (0, 500), (1920, 1000), (0, 0, 0), 2)
-    return draw_frame, labls_cords
+    return labls_cords
+
+
+def plot_boxes(cars_list: list, frame: np.ndarray) -> np.ndarray:
+
+    n = len(cars_list)
+
+    for car in cars_list:
+
+        car_type = car[2]
+
+        x1_number, y1_number, x2_number, y2_number = car[0][0]
+        number = car[0][1]
+
+        x1_car, y1_car, x2_car, y2_car = car[1][0]
+        colour = car[1][1]
+
+        if car_type == "car":
+            car_bgr = (0, 0, 255)
+        elif car_type == "truck":
+            car_bgr = (0, 255, 0)
+        elif car_type == "bus":
+            car_bgr = (255, 0, 0)
+
+        number_bgr = (255, 255, 255)
+
+        cv2.rectangle(frame, (x1_car, y1_car), (x2_car, y2_car), car_bgr, 2)
+        cv2.putText(
+            frame,
+            car_type + " " + colour,
+            (x1_car, y2_car + 15),
+            0,
+            1,
+            car_bgr,
+            thickness=2,
+            lineType=cv2.LINE_AA,
+        )
+
+        cv2.rectangle(
+            frame, (x1_number, y1_number), (x2_number, y2_number), number_bgr, 2
+        )
+        cv2.putText(
+            frame,
+            number,
+            (x1_number - 20, y2_number + 30),
+            0,
+            1,
+            number_bgr,
+            thickness=2,
+            lineType=cv2.LINE_AA,
+        )
+
+    cv2.rectangle(frame, (0, 650), (1920, 1000), (0, 0, 0), 2)
+
+    return frame
+
 
 def check_roi(coords):
-    xc = int((coords[0] + coords[2])/2)
-    yc = int((coords[1] + coords[3])/2)
-    if (0 < xc < 1920) and (500 < yc < 1000):
+
+    xc = int((coords[0] + coords[2]) / 2)
+    yc = int((coords[1] + coords[3]) / 2)
+    if (0 < xc < 1920) and (650 < yc < 1000):
         return True
     else:
         return False
 
+
 def main():
+
     cv2.startWindowThread()
-    detector = ObjectDetection("YOLOS_cars.pt", conf=0.3, iou=0.3)
+    detector = ObjectDetection("ObjectDetection/YOLOS_cars.pt", conf=0.3, iou=0.3)
 
-    LPRnet =  build_lprnet(lpr_max_len=9, phase=False, class_num=len(CHARS), dropout_rate=0)
+    LPRnet = build_lprnet(
+        lpr_max_len=9, phase=False, class_num=len(CHARS), dropout_rate=0
+    )
     LPRnet.to(torch.device("cuda:0"))
-    LPRnet.load_state_dict(torch.load("LPRnet/weights/LPRNet__iteration_2000_28.09.pth"))
+    LPRnet.load_state_dict(
+        torch.load("LPRnet/weights/LPRNet__iteration_2000_28.09.pth")
+    )
 
-    i = 0
     for raw_frame in get_frames("test/videos/test.mp4"):
-        # time.sleep(1)
-        current_plates = ''
-        proc_frame = preprocess(raw_frame)
+
+        proc_frame = preprocess(raw_frame, (640, 480))
         results = detector.score_frame(proc_frame)
-        draw_frame, labls_cords = plot_get_boxes(results, raw_frame)
-        #lp recognition
-        for idx, plate_coords in enumerate(labls_cords['numbers']):
+        labls_cords = get_boxes(results, raw_frame)
+        new_cars = check_numbers_overlaps(labls_cords)
+
+        # list to write cars that've been defined
+        cars = []
+
+        for car in new_cars:
+
+            plate_coords = car[0]
+            car_coords = car[1]
+
             if check_roi(plate_coords):
-                x1, y1 = plate_coords[0], plate_coords[1]
-                x2, y2 = plate_coords[2], plate_coords[3]
-                plate = raw_frame[y1:y2, x1:x2]
-                plate_text = rec_plate(LPRnet, plate)
-                current_plates += plate_text + ' || '
-        cv2.putText(draw_frame, current_plates, (10, 50), 0, 1, (255, 255, 255), thickness=2, lineType=cv2.LINE_AA)
-        if i != 0:
-            pf_detected_cars = detected_cars
-        detected_cars = detect_car(labls_cords)
-        if i != 0:
-            values = track_cars(pf_detected_cars, detected_cars)
-            # make_commit_to_db(connection, values)
-        cv2.imshow("video", draw_frame)
+
+                x1_car, y1_car = car_coords[0], car_coords[1]
+                x2_car, y2_car = car_coords[2], car_coords[3]
+
+                # define car's colour
+                car_box_image = raw_frame[y1_car:y2_car, x1_car:x2_car]
+                colour = detect_color(car_box_image)
+
+                car[1] = [car_coords, colour]
+
+                x1_plate, y1_plate = plate_coords[0], plate_coords[1]
+                x2_plate, y2_plate = plate_coords[2], plate_coords[3]
+
+                # define number on the plate
+                plate_box_image = raw_frame[y1_plate:y2_plate, x1_plate:x2_plate]
+                plate_text = rec_plate(LPRnet, plate_box_image)
+
+                # check if number mutchs russian number type
+                if (
+                    not re.match("[A-Z]{1}[0-9]{3}[A-Z]{2}[0-9]{2,3}", plate_text)
+                    is None
+                ):
+
+                    car[0] = [plate_coords, plate_text + "_OK"]
+
+                else:
+
+                    car[0] = [plate_coords, plate_text + "_NOK"]
+
+                cars.append(car)
+
+        drawn_frame = plot_boxes(cars, raw_frame)
+        proc_frame = preprocess(drawn_frame, (1080, 720))
+
+        cv2.imshow("video", proc_frame)
+
+        if cv2.waitKey(30) & 0xFF == ord("s"):
+
+            time.sleep(5)
+
         if cv2.waitKey(30) & 0xFF == ord("q"):
             break

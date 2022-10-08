@@ -1,24 +1,18 @@
-from PIL import Image, ImageDraw
-import numpy as np
-import os
-from sklearn.cluster import KMeans
 import csv
-import random
 import math
 import operator
+import os
+import random
+
 import cv2
+import numpy as np
 
-
-def bounding_box_img(img, bbox):
-    x_min, y_min, x_max, y_max = bbox
-    bbox_obj = img[y_min:y_max, x_min:x_max]
-    return bbox_obj
 
 def color_histogram_of_test_image(image):
     chans = cv2.split(image)
-    colors = ('b', 'g', 'r')
+    colors = ("b", "g", "r")
     features = []
-    feature_data = ''
+    feature_data = ""
     counter = 0
     for (chan, color) in zip(chans, colors):
         counter = counter + 1
@@ -35,39 +29,39 @@ def color_histogram_of_test_image(image):
             green = str(elem)
         elif counter == 3:
             red = str(elem)
-            feature_data = red + ',' + green + ',' + blue
+            feature_data = red + "," + green + "," + blue
             # print(feature_data)
 
-    with open('test.data', 'w') as myfile:
+    with open("test.data", "w") as myfile:
         myfile.write(feature_data)
 
 
 def color_histogram_of_training_image(img_name):
     # detect image color by using image file name to label training data
-    if 'red' in img_name:
-        data_source = 'red'
-    elif 'yellow' in img_name:
-        data_source = 'yellow'
-    elif 'green' in img_name:
-        data_source = 'green'
-    elif 'orange' in img_name:
-        data_source = 'orange'
-    elif 'white' in img_name:
-        data_source = 'white'
-    elif 'black' in img_name:
-        data_source = 'black'
-    elif 'blue' in img_name:
-        data_source = 'blue'
-    elif 'violet' in img_name:
-        data_source = 'violet'
+    if "red" in img_name:
+        data_source = "red"
+    elif "yellow" in img_name:
+        data_source = "yellow"
+    elif "green" in img_name:
+        data_source = "green"
+    elif "orange" in img_name:
+        data_source = "orange"
+    elif "white" in img_name:
+        data_source = "white"
+    elif "black" in img_name:
+        data_source = "black"
+    elif "blue" in img_name:
+        data_source = "blue"
+    elif "violet" in img_name:
+        data_source = "violet"
 
     # load the image
     image = cv2.imread(img_name)
 
     chans = cv2.split(image)
-    colors = ('b', 'g', 'r')
+    colors = ("b", "g", "r")
     features = []
-    feature_data = ''
+    feature_data = ""
     counter = 0
     for (chan, color) in zip(chans, colors):
         counter = counter + 1
@@ -84,40 +78,40 @@ def color_histogram_of_training_image(img_name):
             green = str(elem)
         elif counter == 3:
             red = str(elem)
-            feature_data = red + ',' + green + ',' + blue
+            feature_data = red + "," + green + "," + blue
 
-    with open('training.data', 'a') as myfile:
-        myfile.write(feature_data + ',' + data_source + '\n')
+    with open("training.data", "a") as myfile:
+        myfile.write(feature_data + "," + data_source + "\n")
 
 
 def training():
     # red color training images
-    for f in os.listdir('./training_dataset/red'):
-        color_histogram_of_training_image('./training_dataset/red/' + f)
+    for f in os.listdir("./training_dataset/red"):
+        color_histogram_of_training_image("./training_dataset/red/" + f)
 
     # yellow color training images
-    for f in os.listdir('./training_dataset/yellow'):
-        color_histogram_of_training_image('./training_dataset/yellow/' + f)
+    for f in os.listdir("./training_dataset/yellow"):
+        color_histogram_of_training_image("./training_dataset/yellow/" + f)
 
     # green color training images
-    for f in os.listdir('./training_dataset/green'):
-        color_histogram_of_training_image('./training_dataset/green/' + f)
+    for f in os.listdir("./training_dataset/green"):
+        color_histogram_of_training_image("./training_dataset/green/" + f)
 
     # orange color training images
-    for f in os.listdir('./training_dataset/orange'):
-        color_histogram_of_training_image('./training_dataset/orange/' + f)
+    for f in os.listdir("./training_dataset/orange"):
+        color_histogram_of_training_image("./training_dataset/orange/" + f)
 
     # white color training images
-    for f in os.listdir('./training_dataset/white'):
-        color_histogram_of_training_image('./training_dataset/white/' + f)
+    for f in os.listdir("./training_dataset/white"):
+        color_histogram_of_training_image("./training_dataset/white/" + f)
 
     # black color training images
-    for f in os.listdir('./training_dataset/black'):
-        color_histogram_of_training_image('./training_dataset/black/' + f)
+    for f in os.listdir("./training_dataset/black"):
+        color_histogram_of_training_image("./training_dataset/black/" + f)
 
     # blue color training images
-    for f in os.listdir('./training_dataset/blue'):
-        color_histogram_of_training_image('./training_dataset/blue/' + f)
+    for f in os.listdir("./training_dataset/blue"):
+        color_histogram_of_training_image("./training_dataset/blue/" + f)
 
 
 # calculation of euclidead distance
@@ -133,8 +127,9 @@ def kNearestNeighbors(training_feature_vector, testInstance, k):
     distances = []
     length = len(testInstance)
     for x in range(len(training_feature_vector)):
-        dist = calculateEuclideanDistance(testInstance,
-                                          training_feature_vector[x], length)
+        dist = calculateEuclideanDistance(
+            testInstance, training_feature_vector[x], length
+        )
         distances.append((training_feature_vector[x], dist))
     distances.sort(key=operator.itemgetter(1))
     neighbors = []
@@ -152,17 +147,15 @@ def responseOfNeighbors(neighbors):
             all_possible_neighbors[response] += 1
         else:
             all_possible_neighbors[response] = 1
-    sortedVotes = sorted(all_possible_neighbors.items(),
-                         key=operator.itemgetter(1), reverse=True)
+    sortedVotes = sorted(
+        all_possible_neighbors.items(), key=operator.itemgetter(1), reverse=True
+    )
     return sortedVotes[0][0]
 
 
 # Load image feature data to training feature vectors and test feature vector
 def loadDataset(
-        filename,
-        filename2,
-        training_feature_vector=[],
-        test_feature_vector=[],
+    filename, filename2, training_feature_vector=[], test_feature_vector=[],
 ):
     with open(filename) as csvfile:
         lines = csv.reader(csvfile)
@@ -188,35 +181,25 @@ def main(training_data, test_data):
     classifier_prediction = []  # predictions
     k = 3  # K value of k nearest neighbor
     for x in range(len(test_feature_vector)):
-        neighbors = kNearestNeighbors(training_feature_vector, test_feature_vector[x], k)
+        neighbors = kNearestNeighbors(
+            training_feature_vector, test_feature_vector[x], k
+        )
         result = responseOfNeighbors(neighbors)
         classifier_prediction.append(result)
     return classifier_prediction[0]
 
 
-def detect_color(frame, bbox, numcolors=1, swatchsize=20, resize=150):
-    box_image = bounding_box_img(frame, bbox)
+def detect_color(box_image):
+
     # read the test image
     source_image = box_image
-    prediction = 'n.a.'
+    prediction = "n.a."
 
     # checking whether the training data is ready
-    PATH = './training.data'
-
-    if os.path.isfile(PATH) and os.access(PATH, os.R_OK):
-        print('training data is ready, classifier is loading...')
-    else:
-        print('training data is being created...')
-        open('training.data', 'w')
-        training()
-        print('training data is ready, classifier is loading...')
+    PATH = "ColourDetection/training.data"
 
     # get the prediction
     color_histogram_of_test_image(source_image)
-    prediction = main('training.data', 'test.data')
-    print('Detected color is:', prediction)
+    prediction = main("ColourDetection/training.data", "ColourDetection/test.data")
 
-
-    # Display the resulting frame
-    # cv2.imshow('color classifier', source_image)
     return prediction

@@ -1,5 +1,6 @@
-import torch.nn as nn
 import torch
+import torch.nn as nn
+
 
 class small_basic_block(nn.Module):
     def __init__(self, ch_in, ch_out):
@@ -13,8 +14,10 @@ class small_basic_block(nn.Module):
             nn.ReLU(),
             nn.Conv2d(ch_out // 4, ch_out, kernel_size=1),
         )
+
     def forward(self, x):
         return self.block(x)
+
 
 class LPRNet(nn.Module):
     def __init__(self, lpr_max_len, phase, class_num, dropout_rate):
@@ -23,32 +26,41 @@ class LPRNet(nn.Module):
         self.lpr_max_len = lpr_max_len
         self.class_num = class_num
         self.backbone = nn.Sequential(
-            nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, stride=1), # 0
+            nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, stride=1),  # 0
             nn.BatchNorm2d(num_features=64),
             nn.ReLU(),  # 2
             nn.MaxPool3d(kernel_size=(1, 3, 3), stride=(1, 1, 1)),
-            small_basic_block(ch_in=64, ch_out=128),    # *** 4 ***
+            small_basic_block(ch_in=64, ch_out=128),  # *** 4 ***
             nn.BatchNorm2d(num_features=128),
             nn.ReLU(),  # 6
             nn.MaxPool3d(kernel_size=(1, 3, 3), stride=(2, 1, 2)),
-            small_basic_block(ch_in=64, ch_out=256),   # 8
+            small_basic_block(ch_in=64, ch_out=256),  # 8
             nn.BatchNorm2d(num_features=256),
             nn.ReLU(),  # 10
-            small_basic_block(ch_in=256, ch_out=256),   # *** 11 ***
-            nn.BatchNorm2d(num_features=256),   # 12
+            small_basic_block(ch_in=256, ch_out=256),  # *** 11 ***
+            nn.BatchNorm2d(num_features=256),  # 12
             nn.ReLU(),
             nn.MaxPool3d(kernel_size=(1, 3, 3), stride=(4, 1, 2)),  # 14
             nn.Dropout(dropout_rate),
-            nn.Conv2d(in_channels=64, out_channels=256, kernel_size=(1, 4), stride=1),  # 16
+            nn.Conv2d(
+                in_channels=64, out_channels=256, kernel_size=(1, 4), stride=1
+            ),  # 16
             nn.BatchNorm2d(num_features=256),
             nn.ReLU(),  # 18
             nn.Dropout(dropout_rate),
-            nn.Conv2d(in_channels=256, out_channels=class_num, kernel_size=(13, 1), stride=1), # 20
+            nn.Conv2d(
+                in_channels=256, out_channels=class_num, kernel_size=(13, 1), stride=1
+            ),  # 20
             nn.BatchNorm2d(num_features=class_num),
             nn.ReLU(),  # *** 22 ***
         )
         self.container = nn.Sequential(
-            nn.Conv2d(in_channels=448+self.class_num, out_channels=self.class_num, kernel_size=(1, 1), stride=(1, 1)),
+            nn.Conv2d(
+                in_channels=448 + self.class_num,
+                out_channels=self.class_num,
+                kernel_size=(1, 1),
+                stride=(1, 1),
+            ),
             # nn.BatchNorm2d(num_features=self.class_num),
             # nn.ReLU(),
             # nn.Conv2d(in_channels=self.class_num, out_channels=self.lpr_max_len+1, kernel_size=3, stride=2),
@@ -59,7 +71,7 @@ class LPRNet(nn.Module):
         keep_features = list()
         for i, layer in enumerate(self.backbone.children()):
             x = layer(x)
-            if i in [2, 6, 13, 22]: # [2, 4, 8, 11, 22]
+            if i in [2, 6, 13, 22]:  # [2, 4, 8, 11, 22]
                 keep_features.append(x)
 
         global_context = list()
@@ -78,6 +90,7 @@ class LPRNet(nn.Module):
         logits = torch.mean(x, dim=2)
 
         return logits
+
 
 def build_lprnet(lpr_max_len=8, phase=False, class_num=66, dropout_rate=0.5):
 

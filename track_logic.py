@@ -1,15 +1,23 @@
 import re
 
+import cv2
+import numpy
+import torch
 
-def detect_car(labls_cords: dict) -> list:
+
+def check_numbers_overlaps(labls_cords: dict) -> list:
+
     """
-    labls_cords: dict with labels and coordinates
+    Check each number's BB and correlate it with car's BB
 
-    return: list detected cars 
+    return: list - the list has following structure [
+        [(number's cords), (car's cords), 'car_type'],
+        [(number's cords), (car's cords), 'car_type'],
+        ...
+        ]
     """
 
     new_cars = []
-    detected_cars = []
 
     for number in labls_cords["numbers"]:
 
@@ -36,6 +44,39 @@ def detect_car(labls_cords: dict) -> list:
                 car[1] <= number[1] <= number[3] <= car[3]
             ):
                 new_cars.append([number, car, "bus"])
+
+    return new_cars
+
+
+# for idx, plate_coords in enumerate(labls_cords["numbers"]):
+#             if check_roi(plate_coords):
+#                 x1, y1 = plate_coords[0], plate_coords[1]
+#                 x2, y2 = plate_coords[2], plate_coords[3]
+#                 plate = raw_frame[y1:y2, x1:x2]
+#                 plate_text = rec_plate(LPRnet, plate)
+#                 current_plates += plate_text + " || "
+
+
+#         cv2.putText(
+#             draw_frame,
+#             current_plates,
+#             (10, 50),
+#             0,
+#             1,
+#             (255, 255, 255),
+#             thickness=2,
+#             lineType=cv2.LINE_AA,
+#         )
+
+
+def detect_car(labls_cords: dict, frame: numpy.ndarray, model) -> list:
+    """
+    labls_cords: dict with labels and coordinates
+
+    return: list detected cars 
+    """
+
+    detected_cars = []
 
     for car in new_cars:
 

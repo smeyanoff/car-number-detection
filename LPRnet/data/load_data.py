@@ -1,13 +1,53 @@
-from torch.utils.data import *
-from imutils import paths
-import numpy as np
-import random
-import cv2
 import os
+import random
 
-CHARS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V','W', 'X', 'Y', 'Z', 'I', 'O', '_']
+import cv2
+import numpy as np
+from imutils import paths
+from torch.utils.data import *
 
-CHARS_DICT = {char:i for i, char in enumerate(CHARS)}
+CHARS = [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+    "I",
+    "O",
+    "_",
+]
+
+CHARS_DICT = {char: i for i, char in enumerate(CHARS)}
+
 
 class LPRDataLoader(Dataset):
     def __init__(self, img_dir, imgSize, lpr_max_len, PreprocFun=None):
@@ -51,7 +91,7 @@ class LPRDataLoader(Dataset):
         return Image, label, len(label)
 
     def transform(self, img):
-        img = img.astype('float32')
+        img = img.astype("float32")
         img -= 127.5
         img *= 0.0078125
         img = np.transpose(img, (2, 0, 1))
@@ -59,8 +99,12 @@ class LPRDataLoader(Dataset):
         return img
 
     def check(self, label):
-        if label[2] != CHARS_DICT['D'] and label[2] != CHARS_DICT['F'] \
-                and label[-1] != CHARS_DICT['D'] and label[-1] != CHARS_DICT['F']:
+        if (
+            label[2] != CHARS_DICT["D"]
+            and label[2] != CHARS_DICT["F"]
+            and label[-1] != CHARS_DICT["D"]
+            and label[-1] != CHARS_DICT["F"]
+        ):
             print("Error label, Please check!")
             return False
         else:

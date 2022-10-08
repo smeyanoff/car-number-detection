@@ -1,8 +1,6 @@
 import re
 
-import cv2
 import numpy
-import torch
 
 
 def check_numbers_overlaps(labls_cords: dict) -> list:
@@ -48,83 +46,34 @@ def check_numbers_overlaps(labls_cords: dict) -> list:
     return new_cars
 
 
-# for idx, plate_coords in enumerate(labls_cords["numbers"]):
-#             if check_roi(plate_coords):
-#                 x1, y1 = plate_coords[0], plate_coords[1]
-#                 x2, y2 = plate_coords[2], plate_coords[3]
-#                 plate = raw_frame[y1:y2, x1:x2]
-#                 plate_text = rec_plate(LPRnet, plate)
-#                 current_plates += plate_text + " || "
+# def track_cars(pf_detected_cars: list, detected_cars: list) -> list:
+#     """
+#     pf_detected_cars - cars on the past frame
+#     detected_cars - cars that've been detected on the current frame
+#     return:list - values to write to DB
+#     """
 
+#     # campare cars in the past frame with
+#     # cars on the current frame
 
-#         cv2.putText(
-#             draw_frame,
-#             current_plates,
-#             (10, 50),
-#             0,
-#             1,
-#             (255, 255, 255),
-#             thickness=2,
-#             lineType=cv2.LINE_AA,
-#         )
+#     for pf_det_car in pf_detected_cars:
 
+#         for det_car in detected_cars:
 
-def detect_car(labls_cords: dict, frame: numpy.ndarray, model) -> list:
-    """
-    labls_cords: dict with labels and coordinates
+#             # if cars types are the same
+#             if pf_det_car[2] == det_car[2]:
 
-    return: list detected cars 
-    """
+#                 # if cars colours are the same
+#                 if pf_det_car[1] == det_car[1]:
 
-    detected_cars = []
+#                     # if numbers are closely equails
+#                     if (
+#                         len(set(pf_det_car[0]).symmetric_difference(set(det_car[0])))
+#                         <= 2
+#                     ):
+#                         # I think this is the same car
+#                         pf_detected_cars.remove(det_car)
 
-    for car in new_cars:
+#     values = list(set(pf_detected_cars) - set(detected_cars))
 
-        # send car's number to the number model
-
-        number = "АА422А63"
-
-        if not re.match("[А-Я]{2}[0-9]{3}[А-Я]{1}[0-9]{2,3}", number) is None:
-
-            car[0] = number
-
-            # send car to the colour model
-            colour = "green"
-            car[1] = colour
-
-            detected_cars.append(tuple(car))
-
-    return new_cars
-
-
-def track_cars(pf_detected_cars: list, detected_cars: list) -> list:
-    """
-    pf_detected_cars - cars on the past frame
-    detected_cars - cars that've been detected on the current frame
-    return:list - values to write to DB
-    """
-
-    # campare cars in the past frame with
-    # cars on the current frame
-
-    for pf_det_car in pf_detected_cars:
-
-        for det_car in detected_cars:
-
-            # if cars types are the same
-            if pf_det_car[2] == det_car[2]:
-
-                # if cars colours are the same
-                if pf_det_car[1] == det_car[1]:
-
-                    # if numbers are closely equails
-                    if (
-                        len(set(pf_det_car[0]).symmetric_difference(set(det_car[0])))
-                        <= 2
-                    ):
-                        # I think this is the same car
-                        pf_detected_cars.remove(det_car)
-
-    values = list(set(pf_detected_cars) - set(detected_cars))
-
-    return values
+#     return values

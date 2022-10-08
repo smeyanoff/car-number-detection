@@ -31,7 +31,7 @@ def color_histogram_of_test_image(image):
         elif counter == 3:
             red = str(elem)
             feature_data = red + "," + green + "," + blue
-            print(feature_data)
+
 
     with open("ColourDetection/test.data", "w") as myfile:
         myfile.write(feature_data)

@@ -11,6 +11,7 @@ from LPRnet.rec_plate import rec_plate
 from ObjectDetection.detect_car_YOLO import ObjectDetection
 from track_logic import *
 
+import settings
 
 def get_frames(video_src: str) -> np.ndarray:
     """
@@ -134,25 +135,29 @@ def plot_boxes(cars_list: list, frame: np.ndarray) -> np.ndarray:
             lineType=cv2.LINE_AA,
         )
 
-    cv2.rectangle(frame, (0, 650), (1920, 1000), (0, 0, 0), 2)
+    detection_area = settings.DETECTION_AREA
+
+    cv2.rectangle(frame, detection_area[0], detection_area[1], (0, 0, 0), 2)
 
     return frame
 
 
 def check_roi(coords):
 
+    detection_area = settings.DETECTION_AREA
+
     xc = int((coords[0] + coords[2]) / 2)
     yc = int((coords[1] + coords[3]) / 2)
-    if (0 < xc < 1920) and (650 < yc < 1000):
+    if (detection_area[0][0] < xc < detection_area[1][0]) and (detection_area[0][1] < yc < detection_area[1][1]):
         return True
     else:
         return False
 
 
-def main():
+def main(video_file_path):
 
     cv2.startWindowThread()
-    detector = ObjectDetection("ObjectDetection/YOLOS_cars.pt", conf=0.3, iou=0.3)
+    detector = ObjectDetection("ObjectDetection/YOLOS_cars.pt", conf=settings.YOLO_CONF, iou=settings.YOLO_IOU)
 
     LPRnet = build_lprnet(
         lpr_max_len=9, phase=False, class_num=len(CHARS), dropout_rate=0
@@ -162,7 +167,7 @@ def main():
         torch.load("LPRnet/weights/LPRNet__iteration_2000_28.09.pth")
     )
 
-    for raw_frame in get_frames("test/videos/test.mp4"):
+    for raw_frame in get_frames(settings.FILE_PATH):
 
         proc_frame = preprocess(raw_frame, (640, 480))
         results = detector.score_frame(proc_frame)
@@ -210,10 +215,11 @@ def main():
                 cars.append(car)
 
         drawn_frame = plot_boxes(cars, raw_frame)
-        proc_frame = preprocess(drawn_frame, (1080, 720))
+        proc_frame = preprocess(drawn_frame, settings.FINAL_FRAME_RES)
 
         cv2.imshow("video", proc_frame)
-
+        
+        # wait 5 sec if push 's'
         if cv2.waitKey(30) & 0xFF == ord("s"):
 
             time.sleep(5)

@@ -206,13 +206,12 @@ def detect_color(box_image):
         # get the prediction
         color_histogram_of_test_image(source_image)
         prediction = main("ColourDetection/training.data", "ColourDetection/test.data")
-        print(prediction)
     else:
         open('ColourDetection/training.data', 'w')
         training()
         # get the prediction
         color_histogram_of_test_image(source_image)
         prediction = main("ColourDetection/training.data", "ColourDetection/test.data")
-        print(prediction)
+
 
     return prediction

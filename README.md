@@ -42,7 +42,7 @@ pip install -r requirements.txt
 <img width="1080" alt="Снимок экрана 2022-10-09 в 13 35 48" src="https://user-images.githubusercontent.com/27068383/194752086-e0f2957b-a509-46d9-a11d-eebafa9f8725.png">
 
 
-## Распознавание текста
+## Распознавание номера
 Для распознавания номера на номерных знаках сначала использовался tesseract, но точность получилась низкая:
 <br>
 ![2022-10-05 16 55 17](https://user-images.githubusercontent.com/27068383/194079080-494d75e1-ec2c-44c9-9404-e665737329ff.jpg)

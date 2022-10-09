@@ -221,6 +221,6 @@ pip install -r requirements.txt
 
 # Reference
 
-[YOLOv5](https://github.com/ultralytics/yolov5?ysclid=l9187ounp212699888)
-[COLOR RECOGNITION](https://github.com/ahmetozlu/color_recognition)
-[]
+<p>[YOLOv5](https://github.com/ultralytics/yolov5?ysclid=l9187ounp212699888)</p>
+<p>[COLOR RECOGNITION](https://github.com/ahmetozlu/color_recognition)</p>
+<p>[]</p>

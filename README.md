@@ -53,6 +53,7 @@ pip install -r requirements.txt
 
 ## Дерево проекта
 
+```bash
 ├── ColourDetection
 │   ├── __pycache__
 │   │   ├── detect_color.cpython-36.pyc
@@ -162,7 +163,7 @@ pip install -r requirements.txt
 │       ├── test.mp4
 │       └── test2.mp4
 └── track_logic.py
-
+```
 
 # Датасет
 

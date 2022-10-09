@@ -108,3 +108,5 @@ pip install -r requirements.txt
 
 
 # Reference
+
+[YOLOv5](https://github.com/ultralytics/yolov5?ysclid=l9187ounp212699888)

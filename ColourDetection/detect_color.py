@@ -14,6 +14,7 @@ def color_histogram_of_test_image(image):
     features = []
     feature_data = ""
     counter = 0
+
     for (chan, color) in zip(chans, colors):
         counter = counter + 1
 
@@ -30,9 +31,9 @@ def color_histogram_of_test_image(image):
         elif counter == 3:
             red = str(elem)
             feature_data = red + "," + green + "," + blue
-            # print(feature_data)
 
-    with open("test.data", "w") as myfile:
+
+    with open("ColourDetection/test.data", "w") as myfile:
         myfile.write(feature_data)
 
 
@@ -80,38 +81,38 @@ def color_histogram_of_training_image(img_name):
             red = str(elem)
             feature_data = red + "," + green + "," + blue
 
-    with open("training.data", "a") as myfile:
+    with open("ColourDetection/training.data", "a") as myfile:
         myfile.write(feature_data + "," + data_source + "\n")
 
 
 def training():
     # red color training images
-    for f in os.listdir("./training_dataset/red"):
-        color_histogram_of_training_image("./training_dataset/red/" + f)
+    for f in os.listdir("ColourDetection/training_dataset/red"):
+        color_histogram_of_training_image("ColourDetection/training_dataset/red/" + f)
 
     # yellow color training images
-    for f in os.listdir("./training_dataset/yellow"):
-        color_histogram_of_training_image("./training_dataset/yellow/" + f)
+    for f in os.listdir("ColourDetection/training_dataset/yellow"):
+        color_histogram_of_training_image("ColourDetection/training_dataset/yellow/" + f)
 
     # green color training images
-    for f in os.listdir("./training_dataset/green"):
-        color_histogram_of_training_image("./training_dataset/green/" + f)
+    for f in os.listdir("ColourDetection/training_dataset/green"):
+        color_histogram_of_training_image("ColourDetection/training_dataset/green/" + f)
 
     # orange color training images
-    for f in os.listdir("./training_dataset/orange"):
-        color_histogram_of_training_image("./training_dataset/orange/" + f)
+    for f in os.listdir("ColourDetection/training_dataset/orange"):
+        color_histogram_of_training_image("ColourDetection/training_dataset/orange/" + f)
 
     # white color training images
-    for f in os.listdir("./training_dataset/white"):
-        color_histogram_of_training_image("./training_dataset/white/" + f)
+    for f in os.listdir("ColourDetection/training_dataset/white"):
+        color_histogram_of_training_image("ColourDetection/training_dataset/white/" + f)
 
     # black color training images
-    for f in os.listdir("./training_dataset/black"):
-        color_histogram_of_training_image("./training_dataset/black/" + f)
+    for f in os.listdir("ColourDetection/training_dataset/black"):
+        color_histogram_of_training_image("ColourDetection/training_dataset/black/" + f)
 
     # blue color training images
-    for f in os.listdir("./training_dataset/blue"):
-        color_histogram_of_training_image("./training_dataset/blue/" + f)
+    for f in os.listdir("ColourDetection/training_dataset/blue"):
+        color_histogram_of_training_image("ColourDetection/training_dataset/blue/" + f)
 
 
 # calculation of euclidead distance
@@ -155,7 +156,10 @@ def responseOfNeighbors(neighbors):
 
 # Load image feature data to training feature vectors and test feature vector
 def loadDataset(
-    filename, filename2, training_feature_vector=[], test_feature_vector=[],
+        filename,
+        filename2,
+        training_feature_vector=[],
+        test_feature_vector=[],
 ):
     with open(filename) as csvfile:
         lines = csv.reader(csvfile)
@@ -198,8 +202,16 @@ def detect_color(box_image):
     # checking whether the training data is ready
     PATH = "ColourDetection/training.data"
 
-    # get the prediction
-    color_histogram_of_test_image(source_image)
-    prediction = main("ColourDetection/training.data", "ColourDetection/test.data")
+    if os.path.isfile(PATH) and os.access(PATH, os.R_OK):
+        # get the prediction
+        color_histogram_of_test_image(source_image)
+        prediction = main("ColourDetection/training.data", "ColourDetection/test.data")
+    else:
+        open('ColourDetection/training.data', 'w')
+        training()
+        # get the prediction
+        color_histogram_of_test_image(source_image)
+        prediction = main("ColourDetection/training.data", "ColourDetection/test.data")
+
 
     return prediction

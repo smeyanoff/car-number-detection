@@ -37,9 +37,10 @@ pip install -r requirements.txt
 ## Пример распознавания:
 
 <br>
+<img width="1080" alt="Снимок экрана 2022-10-09 в 13 36 12" src="https://user-images.githubusercontent.com/27068383/194752096-7be94ab1-7f43-4a9b-9314-9ff58d9016a6.png">
+
 <img width="1080" alt="Снимок экрана 2022-10-09 в 13 35 48" src="https://user-images.githubusercontent.com/27068383/194752086-e0f2957b-a509-46d9-a11d-eebafa9f8725.png">
 
-<img width="1080" alt="Снимок экрана 2022-10-09 в 13 36 12" src="https://user-images.githubusercontent.com/27068383/194752096-7be94ab1-7f43-4a9b-9314-9ff58d9016a6.png">
 
 ## Распознавание текста
 Для распознавания номера на номерных знаках сначала использовался tesseract, но точность получилась низкая:
@@ -48,7 +49,7 @@ pip install -r requirements.txt
 <br>
 <p>После этого было принято решение обучить нейросеть архитектуры LPRnet. Точность распознавания текста 89,6%.</p>
 
-##Детекция цвета
+## Детекция цвета
 
 # Датасет
 

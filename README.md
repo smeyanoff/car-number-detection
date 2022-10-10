@@ -235,3 +235,5 @@ pip install -r requirements.txt
 [YOLOv5](https://github.com/ultralytics/yolov5?ysclid=l9187ounp212699888)
 <br>
 [COLOR RECOGNITION](https://github.com/ahmetozlu/color_recognition) 
+[NUMBER DETECTION](https://github.com/sirius-ai/LPRNet_Pytorch)
+

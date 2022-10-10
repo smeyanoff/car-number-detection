@@ -66,9 +66,6 @@ pip install -r requirements.txt
 
 ```bash
 ├── ColourDetection
-│   ├── __pycache__
-│   │   ├── detect_color.cpython-36.pyc
-│   │   └── detect_color.cpython-39.pyc
 │   ├── detect_color.py
 │   ├── test.data
 │   ├── training.data
@@ -112,32 +109,13 @@ pip install -r requirements.txt
 │   ├── DBlogic.py
 │   └── cars_numbers_check.db
 ├── LPRnet
-│   ├── __pycache__
-│   │   ├── __init__.cpython-310.pyc
-│   │   ├── rec_plate.cpython-310.pyc
-│   │   ├── rec_plate.cpython-36.pyc
-│   │   └── rec_plate.cpython-39.pyc
 │   ├── data
 │   │   ├── NotoSansCJK-Regular.ttc
 │   │   ├── __init__.py
-│   │   ├── __pycache__
-│   │   │   ├── __init__.cpython-310.pyc
-│   │   │   ├── __init__.cpython-36.pyc
-│   │   │   ├── __init__.cpython-39.pyc
-│   │   │   ├── load_data.cpython-310.pyc
-│   │   │   ├── load_data.cpython-36.pyc
-│   │   │   └── load_data.cpython-39.pyc
 │   │   └── load_data.py
 │   ├── model
 │   │   ├── LPRNet.py
 │   │   ├── __init__.py
-│   │   ├── __pycache__
-│   │   │   ├── LPRNet.cpython-310.pyc
-│   │   │   ├── LPRNet.cpython-36.pyc
-│   │   │   ├── LPRNet.cpython-39.pyc
-│   │   │   ├── __init__.cpython-310.pyc
-│   │   │   ├── __init__.cpython-36.pyc
-│   │   │   └── __init__.cpython-39.pyc
 │   │   └── weights
 │   │       ├── Final_LPRNet_model.pth
 │   │       └── LPRNet__iteration_2000_28.09.pth
@@ -152,18 +130,6 @@ pip install -r requirements.txt
 │   │   └── detect_car_YOLO.cpython-39.pyc
 │   └── detect_car_YOLO.py
 ├── README.md
-├── __pycache__
-│   ├── detect_car_YOLO.cpython-310.pyc
-│   ├── detect_car_YOLO.cpython-39.pyc
-│   ├── general_utils.cpython-310.pyc
-│   ├── settings.cpython-36.pyc
-│   ├── settings.cpython-39.pyc
-│   ├── template.cpython-310.pyc
-│   ├── template.cpython-36.pyc
-│   ├── template.cpython-39.pyc
-│   ├── track_logic.cpython-310.pyc
-│   ├── track_logic.cpython-36.pyc
-│   └── track_logic.cpython-39.pyc
 ├── main.py
 ├── requirements.txt
 ├── settings.py

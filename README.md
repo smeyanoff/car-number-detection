@@ -120,14 +120,8 @@ pip install -r requirements.txt
 │   │       ├── Final_LPRNet_model.pth
 │   │       └── LPRNet__iteration_2000_28.09.pth
 │   ├── rec_plate.py
-│   └── weights
-│       ├── Final_LPRNet_model.pth
-│       └── LPRNet__iteration_2000_28.09.pth
 ├── ObjectDetection
 │   ├── YOLOS_cars.pt
-│   ├── __pycache__
-│   │   ├── detect_car_YOLO.cpython-36.pyc
-│   │   └── detect_car_YOLO.cpython-39.pyc
 │   └── detect_car_YOLO.py
 ├── README.md
 ├── main.py

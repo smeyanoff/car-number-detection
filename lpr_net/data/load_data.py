@@ -4,7 +4,7 @@ import random
 import cv2
 import numpy as np
 from imutils import paths
-from torch.utils.data import *
+from torch.utils.data import Dataset
 
 CHARS = [
     "0",

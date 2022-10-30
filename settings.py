@@ -1,8 +1,25 @@
 
 import os
 
-FILE_PATH = os.environ.get('file_path', "test/videos/test.mp4")
-YOLO_CONF = os.environ.get('yolo_conf', 0.5)
-YOLO_IOU = os.environ.get('yolo_iou', 0.4)
-FINAL_FRAME_RES = os.environ.get('final_frame_resolution', (1080, 720))
-DETECTION_AREA = os.environ.get('detection_area', [(0, 650), (1920, 1000)])
+DEVICE = "cuda"
+
+FILE_PATH = os.environ.get(
+    'file_path', 
+    os.path.normpath("test/videos/test.mp4")
+)
+YOLO_MODEL_PATH = os.environ.get(
+    'yolo_model', 
+    os.path.normpath("object_detection/YOLOS_cars.pt")
+)
+LPR_MODEL_PATH = os.environ.get(
+    'lpr_model', 
+    os.path.normpath("lpr_net\model\weights\LPRNet__iteration_2000_28.09.pth")
+)
+
+YOLO_CONF = 0.5
+YOLO_IOU = 0.4
+LPR_MAX_LEN = 9
+LPR_DROPOUT = 0
+
+FINAL_FRAME_RES = (640, 480)
+DETECTION_AREA = [(0, 650), (1920, 1000)]

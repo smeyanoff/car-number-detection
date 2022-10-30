@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 
 
-class small_basic_block(nn.Module):
+class SmallBasicBlock(nn.Module):
     def __init__(self, ch_in, ch_out):
-        super(small_basic_block, self).__init__()
+        super(SmallBasicBlock, self).__init__()
         self.block = nn.Sequential(
             nn.Conv2d(ch_in, ch_out // 4, kernel_size=1),
             nn.ReLU(),
@@ -30,14 +30,14 @@ class LPRNet(nn.Module):
             nn.BatchNorm2d(num_features=64),
             nn.ReLU(),  # 2
             nn.MaxPool3d(kernel_size=(1, 3, 3), stride=(1, 1, 1)),
-            small_basic_block(ch_in=64, ch_out=128),  # *** 4 ***
+            SmallBasicBlock(ch_in=64, ch_out=128),  # *** 4 ***
             nn.BatchNorm2d(num_features=128),
             nn.ReLU(),  # 6
             nn.MaxPool3d(kernel_size=(1, 3, 3), stride=(2, 1, 2)),
-            small_basic_block(ch_in=64, ch_out=256),  # 8
+            SmallBasicBlock(ch_in=64, ch_out=256),  # 8
             nn.BatchNorm2d(num_features=256),
             nn.ReLU(),  # 10
-            small_basic_block(ch_in=256, ch_out=256),  # *** 11 ***
+            SmallBasicBlock(ch_in=256, ch_out=256),  # *** 11 ***
             nn.BatchNorm2d(num_features=256),  # 12
             nn.ReLU(),
             nn.MaxPool3d(kernel_size=(1, 3, 3), stride=(4, 1, 2)),  # 14
@@ -60,11 +60,7 @@ class LPRNet(nn.Module):
                 out_channels=self.class_num,
                 kernel_size=(1, 1),
                 stride=(1, 1),
-            ),
-            # nn.BatchNorm2d(num_features=self.class_num),
-            # nn.ReLU(),
-            # nn.Conv2d(in_channels=self.class_num, out_channels=self.lpr_max_len+1, kernel_size=3, stride=2),
-            # nn.ReLU(),
+            )
         )
 
     def forward(self, x):
@@ -96,7 +92,4 @@ def build_lprnet(lpr_max_len=8, phase=False, class_num=66, dropout_rate=0.5):
 
     Net = LPRNet(lpr_max_len, phase, class_num, dropout_rate)
 
-    if phase == "train":
-        return Net.train()
-    else:
-        return Net.eval()
+    return Net.eval()

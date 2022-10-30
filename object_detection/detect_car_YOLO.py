@@ -13,7 +13,7 @@ class ObjectDetection:
     Upcoming Features:
     """
 
-    def __init__(self, model_path, conf, iou):
+    def __init__(self, model_path, conf, iou, device):
 
         """
         :param input_file: provide youtube url which will act as input for the model.
@@ -26,7 +26,7 @@ class ObjectDetection:
         self.model.conf = conf
         self.model.iou = iou
 
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.device = device
 
     def load_model(self):
 

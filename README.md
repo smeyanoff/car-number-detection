@@ -66,13 +66,7 @@ pip install -r requirements.txt
 
 ```bash
 
-├── README.md
-├── __pycache__
-│   ├── settings.cpython-36.pyc
-│   └── track_logic.cpython-36.pyc
 ├── colour_detection
-│   ├── __pycache__
-│   │   └── detect_color.cpython-36.pyc
 │   ├── detect_color.py
 │   └── training_dataset
 │       ├── black
@@ -107,20 +101,12 @@ pip install -r requirements.txt
 │           ├── yellow2.png
 │           ...
 ├── lpr_net
-│   ├── __pycache__
-│   │   └── rec_plate.cpython-36.pyc
 │   ├── data
 │   │   ├── NotoSansCJK-Regular.ttc
 │   │   ├── __init__.py
-│   │   ├── __pycache__
-│   │   │   ├── __init__.cpython-36.pyc
-│   │   │   └── load_data.cpython-36.pyc
 │   │   └── load_data.py
 │   ├── model
 │   │   ├── __init__.py
-│   │   ├── __pycache__
-│   │   │   ├── __init__.cpython-36.pyc
-│   │   │   └── lpr_net.cpython-36.pyc
 │   │   ├── lpr_net.py
 │   │   └── weights
 │   │       ├── Final_LPRNet_model.pth
@@ -129,8 +115,6 @@ pip install -r requirements.txt
 ├── main.py
 ├── object_detection
 │   ├── YOLOS_cars.pt
-│   ├── __pycache__
-│   │   └── detect_car_YOLO.cpython-36.pyc
 │   └── detect_car_YOLO.py
 ├── requirements.txt
 ├── settings.py
@@ -139,6 +123,7 @@ pip install -r requirements.txt
 │       ├── test.mp4
 │       └── test2.mp4
 └── track_logic.py
+
 ```
 
 # Датасет

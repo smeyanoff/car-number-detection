@@ -9,7 +9,6 @@ class ObjectDetection:
     Included Features:
     1. Reading and writing of video file using  Opencv2
     2. Using pretrained model to make inferences on frames.
-    3. Use the inferences to plot boxes on objects along with labels.
     Upcoming Features:
     """
 
@@ -31,7 +30,7 @@ class ObjectDetection:
     def load_model(self):
 
         """
-        Function loads the yolo5 model from PyTorch Hub.
+        Function loads the yolo5 model from PyTorch Hub then use our custom weights.
         """
 
         model = torch.hub.load("ultralytics/yolov5", "custom", path=self.__model_path)

@@ -5,9 +5,8 @@ import numpy as np
 import torch
 
 from colour_detection.detect_color import detect_color
-from lpr_net.data.load_data import CHARS
 from lpr_net.model.lpr_net import build_lprnet
-from lpr_net.rec_plate import rec_plate
+from lpr_net.rec_plate import rec_plate, CHARS
 from object_detection.detect_car_YOLO import ObjectDetection
 from track_logic import *
 

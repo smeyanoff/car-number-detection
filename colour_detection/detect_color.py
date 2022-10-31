@@ -34,7 +34,7 @@ def k_nearest_neighbors(test_instance, k):
 
 
 # votes of neighbors
-def responseOfNeighbors(neighbors):
+def response_of_neighbors(neighbors):
     all_possible_neighbors = {}
     for x in range(len(neighbors)):
         response = neighbors[x][-1]
@@ -140,7 +140,7 @@ def main(image):
 
     for x in range(len(test_feature_vector)):
         neighbors = k_nearest_neighbors(test_feature_vector, k)
-        result = responseOfNeighbors(neighbors)
+        result = response_of_neighbors(neighbors)
         classifier_prediction.append(result)
     return classifier_prediction[0]
 

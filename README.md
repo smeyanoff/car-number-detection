@@ -65,75 +65,65 @@ pip install -r requirements.txt
 ## Дерево проекта
 
 ```bash
-├── ColourDetection
+
+├── colour_detection
 │   ├── detect_color.py
-│   ├── test.data
-│   ├── training.data
 │   └── training_dataset
 │       ├── black
 │       │   ├── black1.png
 │       │   ├── black10.png
-│       │   ├── black11.png
-│       │   ├── ...
+│       │   ...
 │       ├── blue
 │       │   ├── blue.jpg
 │       │   ├── blue1.jpg
-│       │   ├── ...
+│       │   ...
 │       ├── green
 │       │   ├── green1.jpg
-│       │   ├── green1.png
-│       │   ├── ...
+│       │   ...
 │       ├── orange
 │       │   ├── orange1.png
 │       │   ├── orange10.png
-│       │   ├── ...
+│       │   ...
 │       ├── red
 │       │   ├── red1.jpg
-│       │   ├── red2.jpg
-│       │   ├── red3.png
-│       │   ├── ...
+│       │   ├── red10.jpg
+│       │   ...
 │       ├── violet
 │       │   ├── violet1.png
 │       │   ├── violet10.png
-│       │   ├── ...
+│       │   ...
 │       ├── white
 │       │   ├── white1.png
 │       │   ├── white10.jpg
-│       │   ├── white2.png
-│       │   ├── ...
+│       │   ...
 │       └── yellow
 │           ├── yellow1.jpg
-│           ├── yellow10.png
-│           ├── ...
-├── DataBase
-│   ├── DBlogic.py
-│   └── cars_numbers_check.db
-├── LPRnet
+│           ├── yellow2.png
+│           ...
+├── lpr_net
 │   ├── data
 │   │   ├── NotoSansCJK-Regular.ttc
 │   │   ├── __init__.py
 │   │   └── load_data.py
 │   ├── model
-│   │   ├── LPRNet.py
 │   │   ├── __init__.py
+│   │   ├── lpr_net.py
 │   │   └── weights
 │   │       ├── Final_LPRNet_model.pth
 │   │       └── LPRNet__iteration_2000_28.09.pth
-│   ├── rec_plate.py
-├── ObjectDetection
+│   └── rec_plate.py
+├── main.py
+├── object_detection
 │   ├── YOLOS_cars.pt
 │   └── detect_car_YOLO.py
-├── README.md
-├── main.py
 ├── requirements.txt
 ├── settings.py
-├── template.py
 ├── test
-│   ├── db_check.py
 │   └── videos
 │       ├── test.mp4
 │       └── test2.mp4
 └── track_logic.py
+
 ```
 
 # Датасет

@@ -9,7 +9,7 @@ training_feature_vector = []  # training feature vector
 
 
 # calculation of euclidead distance
-def calculateEuclideanDistance(variable1, variable2, length):
+def calculate_euclidean_distance(variable1, variable2, length):
     distance = 0
     for x in range(length):
         distance += pow(variable1[x] - variable2[x], 2)
@@ -21,7 +21,7 @@ def kNearestNeighbors(test_instance, k):
     distances = []
     length = len(test_instance)
     for x in range(len(training_feature_vector)):
-        dist = calculateEuclideanDistance(
+        dist = calculate_euclidean_distance(
             test_instance, training_feature_vector[x], length
         )
 

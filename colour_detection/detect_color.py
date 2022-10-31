@@ -17,7 +17,7 @@ def calculate_euclidean_distance(variable1, variable2, length):
 
 
 # get k nearest neigbors
-def kNearestNeighbors(test_instance, k):
+def k_nearest_neighbors(test_instance, k):
     distances = []
     length = len(test_instance)
     for x in range(len(training_feature_vector)):
@@ -139,7 +139,7 @@ def main(image):
     k = 3  # K value of k nearest neighbor
 
     for x in range(len(test_feature_vector)):
-        neighbors = kNearestNeighbors(test_feature_vector, k)
+        neighbors = k_nearest_neighbors(test_feature_vector, k)
         result = responseOfNeighbors(neighbors)
         classifier_prediction.append(result)
     return classifier_prediction[0]

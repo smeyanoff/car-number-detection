@@ -1,5 +1,5 @@
-
 import os
+
 import torch
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -14,7 +14,7 @@ YOLO_MODEL_PATH = os.environ.get(
 )
 LPR_MODEL_PATH = os.environ.get(
     'lpr_model', 
-    os.path.normpath("lpr_net\model\weights\LPRNet__iteration_2000_28.09.pth")
+    os.path.normpath("lpr_net/model/weights/LPRNet__iteration_2000_28.09.pth")
 )
 
 YOLO_CONF = 0.5

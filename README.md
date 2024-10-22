@@ -68,37 +68,6 @@ pip install -r requirements.txt
 ├── colour_detection
 │   ├── detect_color.py
 │   └── training_dataset
-│       ├── black
-│       │   ├── black1.png
-│       │   ├── black10.png
-│       │   ...
-│       ├── blue
-│       │   ├── blue.jpg
-│       │   ├── blue1.jpg
-│       │   ...
-│       ├── green
-│       │   ├── green1.jpg
-│       │   ...
-│       ├── orange
-│       │   ├── orange1.png
-│       │   ├── orange10.png
-│       │   ...
-│       ├── red
-│       │   ├── red1.jpg
-│       │   ├── red10.jpg
-│       │   ...
-│       ├── violet
-│       │   ├── violet1.png
-│       │   ├── violet10.png
-│       │   ...
-│       ├── white
-│       │   ├── white1.png
-│       │   ├── white10.jpg
-│       │   ...
-│       └── yellow
-│           ├── yellow1.jpg
-│           ├── yellow2.png
-│           ...
 ├── lpr_net
 │   ├── data
 │   │   ├── NotoSansCJK-Regular.ttc
@@ -118,9 +87,6 @@ pip install -r requirements.txt
 ├── requirements.txt
 ├── settings.py
 ├── test
-│   └── videos
-│       ├── test.mp4
-│       └── test2.mp4
 └── track_logic.py
 
 ```
